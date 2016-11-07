@@ -56,7 +56,8 @@ struct VIZLabel{
     unsigned int objectId;
     char objectName[VIZ_MAX_LABEL_NAME_LEN];
     BYTE value;
-    float relativePos[3];
+    double angle;
+    double distance;
 };
 
 struct VIZSprite{
@@ -66,7 +67,6 @@ struct VIZSprite{
     vissprite_t* vissprite;
     bool labeled;
     BYTE label;
-    float relativePos[3];
 
     VIZSprite(){
         this->actor = NULL;
@@ -74,7 +74,6 @@ struct VIZSprite{
         this->psprite = false;
         this->labeled = false;
         this->label = 0;
-        memset(this->relativePos, 0, 3 * sizeof(float));
     };
 };
 
@@ -106,15 +105,11 @@ public:
 
     std::vector<VIZSprite> getSprites();
 
-    void addThing(AActor *thing);
-    void eraseThing(AActor *thing);
-
     #ifdef VIZ_LABELS_TEST
         void testUpdate();
     #endif
 
     std::vector<VIZSprite> sprites;
-    std::list<VIZSprite> things;
 
 private:
 

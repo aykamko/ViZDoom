@@ -140,26 +140,6 @@ void VIZLabelsBuffer::sizeUpdate() {
     }
 }
 
-// XXX: DoomSense
-void VIZLabelsBuffer::addThing(AActor *actor){
-    VIZSprite sprite;
-    sprite.actor = actor;
-    sprite.actorId = this->getActorId(actor);
-    sprite.vissprite = NULL;
-
-    printf("adding thing: %p, object_name: %s\n", actor, actor->GetClass()->TypeName.GetChars()); fflush(stdout);
-    this->things.push_front(sprite);
-    actor->thingLink = this->things.begin();
-    actor->thingInserted = true;
-}
-
-// XXX: DoomSense
-void VIZLabelsBuffer::eraseThing(AActor *actor) {
-    if (!actor->thingInserted) return;
-    printf("removing thing: %p, object_name: %s\n", actor, actor->GetClass()->TypeName.GetChars()); fflush(stdout);
-    this->things.erase(actor->thingLink);
-}
-
 void VIZLabelsBuffer::addSprite(AActor *actor, vissprite_t* vis){
     VIZSprite sprite;
     sprite.actor = actor;

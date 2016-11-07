@@ -36,16 +36,6 @@ from vizdoom import *
 from random import choice
 from time import sleep
 
-from math import atan2, degrees, pi, sqrt
-
-def angle(x, y):
-    rads = atan2(-y, x)
-    rads %= 2*pi
-    return degrees(rads)
-
-def distance(x, y):
-    return sqrt(x**2 + y**2)
-
 # Create DoomGame instance. It will run the game and communicate with you.
 game = DoomGame()
 
@@ -113,7 +103,7 @@ game.set_episode_start_time(10)
 game.set_window_visible(True)
 
 # Turns on the sound. (turned off by default)
-game.set_sound_enabled(True)
+game.set_sound_enabled(False)
 
 # Sets the livin reward (for each move) to -1
 game.set_living_reward(-1)
@@ -189,13 +179,13 @@ for i in range(episodes):
 
 
         # Prints state's game variables and reward.
-        demon_pos = labels[0].relative_pos()
+        # demon_label = labels[0]
         # print(map(lambda lb: lb.object_name, labels))
         # import pdb; pdb.set_trace()
         print("State #" + str(n))
         print("Game variables:", vars)
-        print("Demon position:", demon_pos)
-        print("Demon angle: %f, distance: %f" % (angle(*demon_pos[:-1]), distance(*demon_pos[:-1])))
+        for label in labels:
+            print("Demon angle: %f, distance: %f" % (label.angle, label.distance))
         print("Reward:", r)
         print("=====================")
 

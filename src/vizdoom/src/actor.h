@@ -41,11 +41,6 @@
 #include "g_level.h"
 #include "tflags.h"
 
-// XXX: DoomSense
-// #include "viz_labels.h"
-#include <list>
-struct VIZSprite;
-
 struct subsector_t;
 //
 // NOTES: AActor
@@ -1175,10 +1170,6 @@ public:
 	static void ClearTIDHashes ();
 	void AddToHash ();
 	void RemoveFromHash ();
-
-	// XXX: DoomSense
-	bool thingInserted = false;
-	std::list<VIZSprite>::iterator thingLink;
 
 private:
 	static AActor *TIDHash[128];

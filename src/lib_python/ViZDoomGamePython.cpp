@@ -96,7 +96,8 @@ namespace vizdoom {
                 pyLabel.objectId = i->objectId;
                 pyLabel.objectName = bpy::str(i->objectName.c_str());
                 pyLabel.value = i->value;
-                memcpy(pyLabel.relativePos, i->relativePos, 3 * sizeof(float));
+                pyLabel.angle = i->angle;
+                pyLabel.distance = i->distance;
                 pyLabels.append(pyLabel);
             }
 

@@ -1072,8 +1072,7 @@ void R_ProjectSprite (AActor *thing, int fakeside, F3DFloor *fakefloor, F3DFloor
 		}
 	}
 
-	// XXX: DoomSense
-	// if(vizLabels!=NULL) vizLabels->addSprite(thing, vis);
+	if(vizLabels!=NULL) vizLabels->addSprite(thing, vis);
 }
 
 static void R_ProjectWallSprite(AActor *thing, fixed_t fx, fixed_t fy, fixed_t fz, FTextureID picnum, fixed_t xscale, fixed_t yscale, int renderflags)

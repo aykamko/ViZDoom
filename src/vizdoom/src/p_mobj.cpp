@@ -67,9 +67,6 @@
 #include "r_data/colormaps.h"
 #include "r_renderer.h"
 
-// XXX: DoomSense
-#include "viz_labels.h"
-
 // MACROS ------------------------------------------------------------------
 
 #define WATER_SINK_FACTOR		3
@@ -4303,9 +4300,6 @@ void AActor::Deactivate (AActor *activator)
 
 void AActor::Destroy ()
 {
-	// XXX: DoomSense
-	if(vizLabels!=NULL) vizLabels->eraseThing(this);
-
 	// [RH] Destroy any inventory this actor is carrying
 	DestroyAllInventory ();
 

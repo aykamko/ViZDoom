@@ -71,9 +71,6 @@
 
 #include "fragglescript/t_fs.h"
 
-// XXX: DoomSense
-#include "viz_labels.h"
-
 #define MISSING_TEXTURE_WARN_LIMIT		20
 
 void P_SpawnSlopeMakers (FMapThing *firstmt, FMapThing *lastmt, const int *oldvertextable);

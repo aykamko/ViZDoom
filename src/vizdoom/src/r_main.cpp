@@ -760,8 +760,7 @@ void R_RenderActorView (AActor *actor, bool dontmaplines)
 	R_ClearPlanes (true);
 	R_ClearSprites ();
 	if(vizDepthMap!=NULL) vizDepthMap->clearBuffer();
-	// XXX: DoomSense
-	// if(vizLabels!=NULL) vizLabels->clearBuffer();
+	if(vizLabels!=NULL) vizLabels->clearBuffer();
 	NetUpdate ();
 
 	// [RH] Show off segs if r_drawflat is 1

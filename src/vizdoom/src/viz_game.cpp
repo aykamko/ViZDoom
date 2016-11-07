@@ -269,7 +269,7 @@ void VIZ_GameStateUpdateLabels(){
 
         //TODO sort vizLabels->sprites
 
-        fixedvec3 playerPos = VIZ_PLAYER.mo->Pos();
+        AActor *player = VIZ_PLAYER.mo;
         TThinkerIterator<AActor> iterator;
 
         AActor *actor;
@@ -281,10 +281,10 @@ void VIZ_GameStateUpdateLabels(){
                 strncpy(vizGameStateSM->LABEL[labelCount].objectName, actor->GetClass()->TypeName.GetChars(), VIZ_MAX_LABEL_NAME_LEN);
                 vizGameStateSM->LABEL[labelCount].value = actor->tid;
                 if (actor != VIZ_PLAYER.mo) {
-                    fixedvec3 actorPos = actor->Pos();
-                    vizGameStateSM->LABEL[labelCount].relativePos[0] = (playerPos.x - actorPos.x) / 65536.0;
-                    vizGameStateSM->LABEL[labelCount].relativePos[1] = (playerPos.y - actorPos.y) / 65536.0;
-                    vizGameStateSM->LABEL[labelCount].relativePos[2] = (playerPos.z - actorPos.z) / 65536.0;
+                    vizGameStateSM->LABEL[labelCount].angle =
+                        bam2rad(R_PointToAngle2(player->X(), player->Y(), actor->X(), actor->Y())) * (180.0/PI);
+                    vizGameStateSM->LABEL[labelCount].distance =
+                        P_AproxDistance(player->X() - actor->X(), player->Y() - actor->Y()) / 65536.0;
                 }
 
                 // VIZ_DebugMsg(4, VIZ_FUNC, "labelCount: %d, objectId: %d, objectName: %s, value %d",
@@ -294,6 +294,7 @@ void VIZ_GameStateUpdateLabels(){
                 ++labelCount;
             // }
             // if(i->label == VIZ_MAX_LABELS - 1 || labelCount >= VIZ_MAX_LABELS) break;
+            if(labelCount >= VIZ_MAX_LABELS) break;
         }
     }
 

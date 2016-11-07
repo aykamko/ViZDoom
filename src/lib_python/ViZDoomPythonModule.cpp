@@ -388,7 +388,8 @@ BOOST_PYTHON_MODULE(vizdoom)
         .def_readonly("object_id", &LabelPython::objectId)
         .def_readonly("object_name", &LabelPython::objectName)
         .def_readonly("value", &LabelPython::value)
-        .def("relative_pos", &LabelPython::getRelativePos);
+        .def_readonly("angle", &LabelPython::angle)
+        .def_readonly("distance", &LabelPython::distance);
 
     class_<GameStatePython>("GameState", no_init)
         .def_readonly("number", &GameStatePython::number)
