@@ -37,6 +37,7 @@ namespace vizdoom{
         unsigned int objectId;
         std::string objectName;
         uint8_t value;
+        float relativePos[3];
     };
 
     struct GameState {

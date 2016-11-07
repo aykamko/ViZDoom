@@ -1,4 +1,4 @@
-// Emacs style mode select	 -*- C++ -*- 
+// Emacs style mode select	 -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // $Id:$
@@ -65,10 +65,10 @@
 // MACROS ------------------------------------------------------------------
 
 #if 0
-#define TEST_X 32343794 
-#define TEST_Y 111387517 
-#define TEST_Z 2164524 
-#define TEST_ANGLE 2468347904 
+#define TEST_X 32343794
+#define TEST_Y 111387517
+#define TEST_Z 2164524
+#define TEST_ANGLE 2468347904
 #endif
 
 // TYPES -------------------------------------------------------------------
@@ -554,7 +554,7 @@ void R_SetupFreelook()
 {
 	{
 		fixed_t dy;
-		
+
 		if (camera != NULL)
 		{
 			dy = FixedMul (FocalLengthY, finetangent[(ANGLE_90-viewpitch)>>ANGLETOFINESHIFT]);
@@ -760,7 +760,8 @@ void R_RenderActorView (AActor *actor, bool dontmaplines)
 	R_ClearPlanes (true);
 	R_ClearSprites ();
 	if(vizDepthMap!=NULL) vizDepthMap->clearBuffer();
-	if(vizLabels!=NULL) vizLabels->clearBuffer();
+	// XXX: DoomSense
+	// if(vizLabels!=NULL) vizLabels->clearBuffer();
 	NetUpdate ();
 
 	// [RH] Show off segs if r_drawflat is 1
@@ -787,7 +788,7 @@ void R_RenderActorView (AActor *actor, bool dontmaplines)
 	ActiveWallMirror = NULL;
 
 	r_dontmaplines = dontmaplines;
-	
+
 	// [RH] Hack to make windows into underwater areas possible
 	r_fakingunderwater = false;
 
@@ -825,7 +826,7 @@ void R_RenderActorView (AActor *actor, bool dontmaplines)
 		}
 
 		NetUpdate ();
-		
+
 		MaskedCycles.Clock();
 		R_DrawMasked ();
 		MaskedCycles.Unclock();

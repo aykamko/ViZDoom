@@ -46,6 +46,21 @@ namespace vizdoom {
         unsigned int objectId;
         bpy::str objectName;
         uint8_t value;
+        float relativePos[3];
+
+        bpy::object getRelativePos() {
+            static npy_intp relPosShape[1] = {3};
+            PyObject *pyArray = PyArray_SimpleNewFromData(1, relPosShape, NPY_FLOAT32, relativePos);
+            /* This line makes a copy: */
+            pyArray = PyArray_FROM_OTF(pyArray, NPY_FLOAT32, NPY_ARRAY_ENSURECOPY | NPY_ARRAY_ENSUREARRAY);
+            bpy::handle<> numpyHandle = bpy::handle<>(pyArray);
+            bpy::object numpyArray = bpy::object(numpyHandle);
+
+            /* This line caused occasional segfaults in python3 */
+            //bpyn::array numpyArray = bpyn::array(numpyHandle);
+
+            return numpyArray;
+        }
     };
 
     struct GameStatePython {
@@ -63,8 +78,8 @@ namespace vizdoom {
     };
 
     class DoomGamePython : public DoomGame {
-        
-    public:        
+
+    public:
         DoomGamePython();
 
         void setAction(bpy::list const &pyAction);

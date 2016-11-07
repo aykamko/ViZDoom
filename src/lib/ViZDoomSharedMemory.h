@@ -66,6 +66,7 @@ namespace vizdoom {
         unsigned int objectId;
         char objectName[MAX_LABEL_NAME_LEN];
         uint8_t value;
+        float relativePos[3];
     };
 
     struct SMGameState {

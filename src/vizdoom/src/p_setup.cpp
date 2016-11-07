@@ -1,4 +1,4 @@
-// Emacs style mode select	 -*- C++ -*- 
+// Emacs style mode select	 -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // $Id:$
@@ -70,6 +70,9 @@
 #include "r_data/colormaps.h"
 
 #include "fragglescript/t_fs.h"
+
+// XXX: DoomSense
+#include "viz_labels.h"
 
 #define MISSING_TEXTURE_WARN_LIMIT		20
 
@@ -161,7 +164,7 @@ int 			bmapwidth;
 int 			bmapheight; 	// size in mapblocks
 
 int				*blockmap;		// int for larger maps ([RH] Made int because BOOM does)
-int				*blockmaplump;	// offsets in blockmap are from here	
+int				*blockmaplump;	// offsets in blockmap are from here
 
 fixed_t 		bmaporgx;		// origin of block map
 fixed_t 		bmaporgy;
@@ -206,7 +209,7 @@ struct checkstruct
 
 static int GetMapIndex(const char *mapname, int lastindex, const char *lumpname, bool needrequired)
 {
-	static const checkstruct check[] = 
+	static const checkstruct check[] =
 	{
 		{"",		 true},
 		{"THINGS",	 true},
@@ -254,7 +257,7 @@ MapData *P_OpenMapData(const char * mapname, bool justcheck)
 	MapData * map = new MapData;
 	FileReader * wadReader = NULL;
 	bool externalfile = !strnicmp(mapname, "file:", 5);
-	
+
 	if (externalfile)
 	{
 		mapname += 5;
@@ -272,7 +275,7 @@ MapData *P_OpenMapData(const char * mapname, bool justcheck)
 		int lump_wad;
 		int lump_map;
 		int lump_name = -1;
-		
+
 		// Check for both *.wad and *.map in order to load Build maps
 		// as well. The higher one will take precedence.
 		// Names with more than 8 characters will only be checked as .wad and .map.
@@ -281,7 +284,7 @@ MapData *P_OpenMapData(const char * mapname, bool justcheck)
 		lump_wad = Wads.CheckNumForFullName(fmt);
 		fmt.Format("maps/%s.map", mapname);
 		lump_map = Wads.CheckNumForFullName(fmt);
-		
+
 		if (lump_name > lump_wad && lump_name > lump_map && lump_name != -1)
 		{
 			int lumpfile = Wads.GetLumpFile(lump_name);
@@ -418,7 +421,7 @@ MapData *P_OpenMapData(const char * mapname, bool justcheck)
 	// reading from a wad file.
 	wadReader->Seek(0, SEEK_SET);
 	wadReader->Read(&id, sizeof(id));
-	
+
 	if (id == IWAD_ID || id == PWAD_ID)
 	{
 		char maplabel[9]="";
@@ -512,7 +515,7 @@ MapData *P_OpenMapData(const char * mapname, bool justcheck)
 			return NULL;
 		}
 	}
-	return map;		
+	return map;
 }
 
 bool P_CheckMapData(const char *mapname)
@@ -704,7 +707,7 @@ static void SetTextureNoErr (side_t *side, int position, DWORD *color, const cha
 {
 	FTextureID texture;
 	*validcolor = false;
-	texture = TexMan.CheckForTexture (name, FTexture::TEX_Wall,	
+	texture = TexMan.CheckForTexture (name, FTexture::TEX_Wall,
 		FTextureManager::TEXMAN_Overridable|FTextureManager::TEXMAN_TryAny);
 	if (!texture.Exists())
 	{
@@ -724,7 +727,7 @@ static void SetTextureNoErr (side_t *side, int position, DWORD *color, const cha
 			int l=(int)strlen(name);
 			texture = FNullTextureID();
 			*validcolor = false;
-			if (l>=7) 
+			if (l>=7)
 			{
 				for(stop=name2;stop<name2+6;stop++) if (!isxdigit(*stop)) *stop='0';
 
@@ -734,9 +737,9 @@ static void SetTextureNoErr (side_t *side, int position, DWORD *color, const cha
 				name2[4]=0; int green=strtol(name2+2,NULL,16);
 				name2[2]=0; int red=strtol(name2,NULL,16);
 
-				if (!isFog) 
+				if (!isFog)
 				{
-					if (factor==0) 
+					if (factor==0)
 					{
 						*validcolor=false;
 						return;
@@ -845,11 +848,11 @@ void P_LoadVertexes (MapData * map)
 	}
 
 	// Allocate memory for buffer.
-	vertexes = new vertex_t[numvertexes];		
+	vertexes = new vertex_t[numvertexes];
 	vertexdatas = NULL;
 
 	map->Seek(ML_VERTEXES);
-		
+
 	// Copy and convert vertex coordinates, internal representation as fixed.
 	for (i = 0; i < numvertexes; i++)
 	{
@@ -1159,7 +1162,7 @@ void P_LoadZNodes (FileReader &dalump, DWORD id)
 	default:
 		return;
 	}
-	
+
 	if (compressed)
 	{
 		FileReaderZ data (dalump);
@@ -1411,11 +1414,11 @@ void P_LoadSubsectors (MapData * map)
 		return;
 	}
 
-	subsectors = new subsector_t[numsubsectors];		
+	subsectors = new subsector_t[numsubsectors];
 	map->Seek(ML_SSECTORS);
-		
+
 	memset (subsectors, 0, numsubsectors*sizeof(subsector_t));
-	
+
 	for (i = 0; i < numsubsectors; i++)
 	{
 		subsectortype subd;
@@ -1475,7 +1478,7 @@ void P_LoadSectors (MapData *map, FMissingTextureTracker &missingtex)
 	int					lumplen = map->Size(ML_SECTORS);
 
 	numsectors = lumplen / sizeof(mapsector_t);
-	sectors = new sector_t[numsectors];		
+	sectors = new sector_t[numsectors];
 	memset (sectors, 0, numsectors*sizeof(sector_t));
 
 	if (level.flags & LEVEL_SNDSEQTOTALCTRL)
@@ -1489,7 +1492,7 @@ void P_LoadSectors (MapData *map, FMissingTextureTracker &missingtex)
 	map->Read(ML_SECTORS, msp);
 	ms = (mapsector_t*)msp;
 	ss = sectors;
-	
+
 	// Extended properties
 	sectors[0].e = new extsector_t[numsectors];
 
@@ -1585,8 +1588,8 @@ void P_LoadNodes (MapData * map)
 		ForceNodeBuild = true;
 		return;
 	}
-	
-	nodes = new node_t[numnodes];		
+
+	nodes = new node_t[numnodes];
 	used = (WORD *)alloca (sizeof(WORD)*numnodes);
 	memset (used, 0, sizeof(WORD)*numnodes);
 
@@ -1594,7 +1597,7 @@ void P_LoadNodes (MapData * map)
 	mn = (nodetype*)(mnp + nodetype::NF_LUMPOFFSET);
 	map->Read(ML_NODES, mnp);
 	no = nodes;
-	
+
 	for (i = 0; i < numnodes; i++, no++, mn++)
 	{
 		no->x = LittleShort(mn->x)<<FRACBITS;
@@ -1664,7 +1667,7 @@ AActor *SpawnMapThing(int index, FMapThing *mt, int position)
 	if (dumpspawnedthings)
 	{
 		Printf("%5d: (%5d, %5d, %5d), doomednum = %5d, flags = %04x, type = %s\n",
-			index, mt->x>>FRACBITS, mt->y>>FRACBITS, mt->z>>FRACBITS, mt->EdNum, mt->flags, 
+			index, mt->x>>FRACBITS, mt->y>>FRACBITS, mt->z>>FRACBITS, mt->EdNum, mt->flags,
 			spawned? spawned->GetClass()->TypeName.GetChars() : "(none)");
 	}
 	T_AddSpawnedThing(spawned);
@@ -1890,7 +1893,7 @@ void P_AdjustLine (line_t *ld)
 
 	ld->dx = v2->x - v1->x;
 	ld->dy = v2->y - v1->y;
-	
+
 	if (v1->x < v2->x)
 	{
 		ld->bbox[BOXLEFT] = v1->x;
@@ -1919,7 +1922,7 @@ void P_SetLineID (int i, line_t *ld)
 	// [RH] Set line id (as appropriate) here
 	// for Doom format maps this must be done in P_TranslateLineDef because
 	// the tag doesn't always go into the first arg.
-	if (level.maptype == MAPTYPE_HEXEN)	
+	if (level.maptype == MAPTYPE_HEXEN)
 	{
 		int setid = -1;
 		switch (ld->special)
@@ -1954,11 +1957,11 @@ void P_SetLineID (int i, line_t *ld)
 		case Polyobj_ExplicitLine:
 			setid = ld->args[4];
 			break;
-			
+
 		case Plane_Align:
 			setid = ld->args[2];
 			break;
-			
+
 		case Static_Init:
 			if (ld->args[1] == Init_SectorLink) setid = ld->args[0];
 			break;
@@ -2036,7 +2039,7 @@ void P_FinishLoadingLineDef(line_t *ld, int alpha)
 			additive = true;
 		}
 
-		alpha = Scale(alpha, FRACUNIT, 255); 
+		alpha = Scale(alpha, FRACUNIT, 255);
 		if (!ld->args[0])
 		{
 			ld->Alpha = alpha;
@@ -2096,7 +2099,7 @@ void P_LoadLineDefs (MapData * map)
 	int lumplen = map->Size(ML_LINEDEFS);
 	char * mldf;
 	maplinedef_t *mld;
-		
+
 	numlines = lumplen / sizeof(maplinedef_t);
 	lines = new line_t[numlines];
 	linemap.Resize(numlines);
@@ -2182,7 +2185,7 @@ void P_LoadLineDefs2 (MapData * map)
 	int lumplen = map->Size(ML_LINEDEFS);
 	char * mldf;
 	maplinedef2_t *mld;
-		
+
 	numlines = lumplen / sizeof(maplinedef2_t);
 	lines = new line_t[numlines];
 	linemap.Resize(numlines);
@@ -2332,7 +2335,7 @@ static void P_LoopSidedefs (bool firstloop)
 		line_t *line = sides[i].linedef;
 		int lineside = (line->sidedef[0] != &sides[i]);
 		int vert = int((lineside ? line->v2 : line->v1) - vertexes);
-		
+
 		sidetemp[i].b.lineside = lineside;
 		sidetemp[i].b.next = sidetemp[vert].b.first;
 		sidetemp[vert].b.first = i;
@@ -2380,7 +2383,7 @@ static void P_LoopSidedefs (bool firstloop)
 			right = sidetemp[right].b.first;
 
 			if (right == NO_SIDE)
-			{ 
+			{
 				// There is no right side!
 				if (firstloop) Printf ("Line %d's right edge is unconnected\n", linemap[unsigned(line-lines)]);
 				continue;
@@ -2632,7 +2635,7 @@ void P_LoadSideDefs2 (MapData *map, FMissingTextureTracker &missingtex)
 		imsd.midtexture.CopyCStrPart(msd->midtexture, 8);
 		imsd.bottomtexture.CopyCStrPart(msd->bottomtexture, 8);
 
-		P_ProcessSideTextures(!map->HasBehavior, sd, sec, &imsd, 
+		P_ProcessSideTextures(!map->HasBehavior, sd, sec, &imsd,
 							  sidetemp[i].a.special, sidetemp[i].a.tag, &sidetemp[i].a.alpha, missingtex);
 	}
 	delete[] msdf;
@@ -2948,7 +2951,7 @@ static bool P_VerifyBlockMap(int count)
 				return false;
 			}
 
-			offset = *blockoffset;         
+			offset = *blockoffset;
 
 			// check that list offset is in bounds
 			if(offset < 4 || offset >= count)
@@ -3362,7 +3365,7 @@ void P_FreeLevelData ()
 	level.total_monsters = level.total_items = level.total_secrets =
 		level.killed_monsters = level.found_items = level.found_secrets =
 		wminfo.maxfrags = 0;
-		
+
 	FBehavior::StaticUnloadModules ();
 	if (vertexes != NULL)
 	{
@@ -3552,7 +3555,7 @@ void P_SetupLevel (const char *lumpname, int position)
 	{
 		for (i = 0; i < MAXPLAYERS; ++i)
 		{
-			players[i].killcount = players[i].secretcount 
+			players[i].killcount = players[i].secretcount
 				= players[i].itemcount = 0;
 		}
 	}
@@ -3573,7 +3576,7 @@ void P_SetupLevel (const char *lumpname, int position)
 	translationtables[TRANSLATION_LevelScripted].Clear();
 
 	// Initial height of PointOfView will be set by player think.
-	players[consoleplayer].viewz = 1; 
+	players[consoleplayer].viewz = 1;
 
 	// Make sure all sounds are stopped before Z_FreeTags.
 	S_Start ();
@@ -3611,7 +3614,7 @@ void P_SetupLevel (const char *lumpname, int position)
 
 	if (!buildmap)
 	{
-		// note: most of this ordering is important 
+		// note: most of this ordering is important
 		ForceNodeBuild = gennodes;
 
 		// [RH] Load in the BEHAVIOR lump
@@ -3635,7 +3638,7 @@ void P_SetupLevel (const char *lumpname, int position)
 			{
 				// Has the user overridden the game's default translator with a commandline parameter?
 				translator = Args->CheckValue("-xlat");
-				if (translator == NULL) 
+				if (translator == NULL)
 				{
 					// Use the game's default.
 					translator = gameinfo.translator.GetChars();
@@ -3686,7 +3689,7 @@ void P_SetupLevel (const char *lumpname, int position)
 			times[0].Clock();
 			P_LoadVertexes (map);
 			times[0].Unclock();
-			
+
 			// Check for maps without any BSP data at all (e.g. SLIGE)
 			times[1].Clock();
 			P_LoadSectors (map, missingtex);
@@ -3836,7 +3839,7 @@ void P_SetupLevel (const char *lumpname, int position)
 		// If loading the regular nodes failed try GL nodes before considering a rebuild
 		if (ForceNodeBuild)
 		{
-			if (P_LoadGLNodes(map)) 
+			if (P_LoadGLNodes(map))
 			{
 				ForceNodeBuild = false;
 				reloop = true;

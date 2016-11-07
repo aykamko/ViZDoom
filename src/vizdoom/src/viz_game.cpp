@@ -265,23 +265,35 @@ void VIZ_GameStateUpdateLabels(){
     unsigned int labelCount = 0;
     if(vizLabels!=NULL){
 
-        VIZ_DebugMsg(4, VIZ_FUNC, "number of sprites: %d", gametic, vizLabels->getSprites().size());
+        // VIZ_DebugMsg(4, VIZ_FUNC, "number of sprites: %d", gametic, vizLabels->getSprites().size());
 
         //TODO sort vizLabels->sprites
 
-        for(auto i = vizLabels->sprites.begin(); i != vizLabels->sprites.end(); ++i){
-            if(i->labeled){
-                vizGameStateSM->LABEL[labelCount].objectId = i->actorId;
-                strncpy(vizGameStateSM->LABEL[labelCount].objectName, i->actor->GetClass()->TypeName.GetChars(), VIZ_MAX_LABEL_NAME_LEN);
-                vizGameStateSM->LABEL[labelCount].value = i->label;
+        fixedvec3 playerPos = VIZ_PLAYER.mo->Pos();
+        TThinkerIterator<AActor> iterator;
 
-                VIZ_DebugMsg(4, VIZ_FUNC, "labelCount: %d, objectId: %d, objectName: %s, value %d",
-                                labelCount+1, vizGameStateSM->LABEL[labelCount].objectId,
-                                vizGameStateSM->LABEL[labelCount].objectName, vizGameStateSM->LABEL[labelCount].value);
+        AActor *actor;
+        while ( (actor = iterator.Next ()) ) {
+            if ((actor->flags2 & MF2_DORMANT) || !(actor->flags3 & MF3_ISMONSTER)) continue;
+        // for(auto i = vizLabels->things.begin(); i != vizLabels->things.end(); ++i){
+            // if(i->labeled){
+                vizGameStateSM->LABEL[labelCount].objectId = actor->tid;
+                strncpy(vizGameStateSM->LABEL[labelCount].objectName, actor->GetClass()->TypeName.GetChars(), VIZ_MAX_LABEL_NAME_LEN);
+                vizGameStateSM->LABEL[labelCount].value = actor->tid;
+                if (actor != VIZ_PLAYER.mo) {
+                    fixedvec3 actorPos = actor->Pos();
+                    vizGameStateSM->LABEL[labelCount].relativePos[0] = (playerPos.x - actorPos.x) / 65536.0;
+                    vizGameStateSM->LABEL[labelCount].relativePos[1] = (playerPos.y - actorPos.y) / 65536.0;
+                    vizGameStateSM->LABEL[labelCount].relativePos[2] = (playerPos.z - actorPos.z) / 65536.0;
+                }
+
+                // VIZ_DebugMsg(4, VIZ_FUNC, "labelCount: %d, objectId: %d, objectName: %s, value %d",
+                //                 labelCount+1, vizGameStateSM->LABEL[labelCount].objectId,
+                //                 vizGameStateSM->LABEL[labelCount].objectName, vizGameStateSM->LABEL[labelCount].value);
 
                 ++labelCount;
-            }
-            if(i->label == VIZ_MAX_LABELS - 1 || labelCount >= VIZ_MAX_LABELS) break;
+            // }
+            // if(i->label == VIZ_MAX_LABELS - 1 || labelCount >= VIZ_MAX_LABELS) break;
         }
     }
 

@@ -4,7 +4,7 @@
 # This script presents how to use the most basic features of the environment.
 # It configures the engine, and makes the agent perform random actions.
 # It also gets current state and reward earned with the action.
-# <episodes> number of episodes are played. 
+# <episodes> number of episodes are played.
 # Random combination of buttons is chosen for every action.
 # Game variables from state and last reward are printed.
 #
@@ -13,10 +13,38 @@
 
 from __future__ import print_function
 
+import termios, fcntl, sys, os
+stdin_fd = sys.stdin.fileno()
+
+oldterm = termios.tcgetattr(stdin_fd)
+newattr = termios.tcgetattr(stdin_fd)
+newattr[3] = newattr[3] & ~termios.ICANON & ~termios.ECHO
+termios.tcsetattr(stdin_fd, termios.TCSANOW, newattr)
+
+oldflags = fcntl.fcntl(stdin_fd, fcntl.F_GETFL)
+fcntl.fcntl(stdin_fd, fcntl.F_SETFL, oldflags | os.O_NONBLOCK)
+
+def maybe_get_keypress():
+    try:
+        return sys.stdin.read(1)
+        # print "Got character", repr(c)
+    except IOError:
+        return
+
 from vizdoom import *
 
 from random import choice
 from time import sleep
+
+from math import atan2, degrees, pi, sqrt
+
+def angle(x, y):
+    rads = atan2(-y, x)
+    rads %= 2*pi
+    return degrees(rads)
+
+def distance(x, y):
+    return sqrt(x**2 + y**2)
 
 # Create DoomGame instance. It will run the game and communicate with you.
 game = DoomGame()
@@ -64,16 +92,19 @@ game.set_render_decals(False)
 game.set_render_particles(False)
 game.set_render_effects_sprites(False)
 
-# Adds buttons that will be allowed. 
+# Adds buttons that will be allowed.
 game.add_available_button(Button.MOVE_LEFT)
 game.add_available_button(Button.MOVE_RIGHT)
-game.add_available_button(Button.ATTACK)
+game.add_available_button(Button.MOVE_FORWARD)
+game.add_available_button(Button.MOVE_BACKWARD)
+# game.add_available_button(Button.ATTACK)
 
 # Adds game variables that will be included in state.
 game.add_available_game_variable(GameVariable.AMMO2)
+game.set_automap_mode(AutomapMode.OBJECTS)
 
 # Causes episodes to finish after 200 tics (actions)
-game.set_episode_timeout(200)
+game.set_episode_timeout(2000000)
 
 # Makes episodes start after 10 tics (~after raising the weapon)
 game.set_episode_start_time(10)
@@ -97,7 +128,12 @@ game.init()
 # Define some actions. Each list entry corresponds to declared buttons:
 # MOVE_LEFT, MOVE_RIGHT, ATTACK
 # 5 more combinations are naturally possible but only 3 are included for transparency when watching.
-actions = [[True, False, False], [False, True, False], [False, False, True]]
+actions = [
+    [True, False, False, False],
+    [False, True, False, False],
+    [False, False, True, False],
+    [False, False, False, True],
+]
 
 # Run this many episodes
 episodes = 10
@@ -126,8 +162,21 @@ for i in range(episodes):
         automap_buf = state.automap_buffer
         labels      = state.labels
 
+        # import pdb; pdb.set_trace()
+
         # Makes a random action and get remember reward.
-        r = game.make_action(choice(actions))
+        key = maybe_get_keypress()
+        if key == 'w':
+            key_action = actions[2]
+        elif key == 'a':
+            key_action = actions[0]
+        elif key == 's':
+            key_action = actions[3]
+        elif key == 'd':
+            key_action = actions[1]
+        else:
+            key_action = [False, False, False, False]
+        r = game.make_action(key_action)
 
         # Makes a "prolonged" action and skip frames:
         # skiprate = 4
@@ -138,9 +187,15 @@ for i in range(episodes):
         # game.advance_action(skiprate)
         # r = game.get_last_reward()
 
+
         # Prints state's game variables and reward.
+        demon_pos = labels[0].relative_pos()
+        # print(map(lambda lb: lb.object_name, labels))
+        # import pdb; pdb.set_trace()
         print("State #" + str(n))
         print("Game variables:", vars)
+        print("Demon position:", demon_pos)
+        print("Demon angle: %f, distance: %f" % (angle(*demon_pos[:-1]), distance(*demon_pos[:-1])))
         print("Reward:", r)
         print("=====================")
 
@@ -154,3 +209,6 @@ for i in range(episodes):
 
 # It will be done automatically anyway but sometimes you need to do it in the middle of the program...
 game.close()
+
+termios.tcsetattr(stdin_fd, termios.TCSAFLUSH, oldterm)
+fcntl.fcntl(stdin_fd, fcntl.F_SETFL, oldflags)

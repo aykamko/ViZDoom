@@ -236,6 +236,7 @@ namespace vizdoom {
                 label.objectId = this->doomController->getGameState()->LABEL[i].objectId;
                 label.objectName = std::string(this->doomController->getGameState()->LABEL[i].objectName);
                 label.value = this->doomController->getGameState()->LABEL[i].value;
+                memcpy(label.relativePos, this->doomController->getGameState()->LABEL[i].relativePos, 3 * sizeof(float));
                 this->state->labels.push_back(label);
             }
         }

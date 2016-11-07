@@ -1,4 +1,4 @@
-// Emacs style mode select	 -*- C++ -*- 
+// Emacs style mode select	 -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // $Id:$
@@ -669,23 +669,23 @@ void R_ProjectSprite (AActor *thing, int fakeside, F3DFloor *fakefloor, F3DFloor
 	fixed_t				fx, fy, fz;
 	fixed_t 			tr_x;
 	fixed_t 			tr_y;
-	
+
 	fixed_t				gzt;				// killough 3/27/98
 	fixed_t				gzb;				// [RH] use bottom of sprite, not actor
 	fixed_t 			tx, tx2;
 	fixed_t 			tz;
 
 	fixed_t 			xscale = FRACUNIT, yscale = FRACUNIT;
-	
+
 	int 				x1;
 	int 				x2;
 
 	FTextureID			picnum;
 	FTexture			*tex;
 	FVoxelDef			*voxel;
-	
+
 	vissprite_t*		vis;
-	
+
 	fixed_t 			iscale;
 
 	sector_t*			heightsec;			// killough 3/27/98
@@ -1072,7 +1072,8 @@ void R_ProjectSprite (AActor *thing, int fakeside, F3DFloor *fakefloor, F3DFloor
 		}
 	}
 
-	if(vizLabels!=NULL) vizLabels->addSprite(thing, vis);
+	// XXX: DoomSense
+	// if(vizLabels!=NULL) vizLabels->addSprite(thing, vis);
 }
 
 static void R_ProjectWallSprite(AActor *thing, fixed_t fx, fixed_t fy, fixed_t fz, FTextureID picnum, fixed_t xscale, fixed_t yscale, int renderflags)
@@ -1101,7 +1102,7 @@ static void R_ProjectWallSprite(AActor *thing, fixed_t fx, fixed_t fy, fixed_t f
 	// Is it off-screen?
 	if (wallc.Init(lx1, ly1, lx2, ly2, TOO_CLOSE_Z))
 		return;
-	
+
 	if (wallc.sx1 >= WindowRight || wallc.sx2 <= WindowLeft)
 		return;
 
@@ -1252,7 +1253,7 @@ void R_DrawPSprite (pspdef_t* psp, int pspnum, AActor *owner, fixed_t sx, fixed_
 
 	// off the right side
 	if (x1 > viewwidth)
-		return; 
+		return;
 
 	tx += tex->GetScaledWidth() << FRACBITS;
 	x2 = ((centerxfrac + FixedMul (tx, pspritexscale)) >>FRACBITS);
@@ -1260,7 +1261,7 @@ void R_DrawPSprite (pspdef_t* psp, int pspnum, AActor *owner, fixed_t sx, fixed_
 	// off the left side
 	if (x2 <= 0)
 		return;
-	
+
 	// store information in a vissprite
 	vis = &avis[pspnum];
 	vis->renderflags = owner->renderflags;
@@ -1381,7 +1382,7 @@ void R_DrawPSprite (pspdef_t* psp, int pspnum, AActor *owner, fixed_t sx, fixed_
 				// The colormap has changed. Is it one we can easily identify?
 				// If not, then don't bother trying to identify it for
 				// hardware accelerated drawing.
-				if (vis->Style.colormap < SpecialColormaps[0].Colormap || 
+				if (vis->Style.colormap < SpecialColormaps[0].Colormap ||
 					vis->Style.colormap > SpecialColormaps.Last().Colormap)
 				{
 					noaccel = true;
@@ -1565,7 +1566,7 @@ void R_DrawRemainingPlayerSprites()
 	for (int i = 0; i < NUMPSPRITES; ++i)
 	{
 		vissprite_t *vis;
-		
+
 		vis = VisPSprites[i];
 		VisPSprites[i] = NULL;
 
@@ -1578,7 +1579,7 @@ void R_DrawRemainingPlayerSprites()
 			FColormapStyle colormapstyle;
 			bool usecolormapstyle = false;
 
-			if (vis->Style.colormap >= SpecialColormaps[0].Colormap && 
+			if (vis->Style.colormap >= SpecialColormaps[0].Colormap &&
 				vis->Style.colormap < SpecialColormaps[SpecialColormaps.Size()].Colormap)
 			{
 				// Yuck! There needs to be a better way to store colormaps in the vissprite... :(
@@ -1875,7 +1876,7 @@ void R_DrawSprite (vissprite_t *spr)
 	if ((fake3D & FAKE3D_CLIPTOP)    && spr->gzb >= sclipTop) return;
 
 	// kg3D - correct colors now
-	if (!fixedcolormap && fixedlightlev < 0 && spr->sector->e && spr->sector->e->XFloor.lightlist.Size()) 
+	if (!fixedcolormap && fixedlightlev < 0 && spr->sector->e && spr->sector->e->XFloor.lightlist.Size())
 	{
 		if (!(fake3D & FAKE3D_CLIPTOP))
 		{
@@ -1884,10 +1885,10 @@ void R_DrawSprite (vissprite_t *spr)
 		sector_t *sec = NULL;
 		for (i = spr->sector->e->XFloor.lightlist.Size() - 1; i >= 0; i--)
 		{
-			if (sclipTop <= spr->sector->e->XFloor.lightlist[i].plane.Zat0()) 
+			if (sclipTop <= spr->sector->e->XFloor.lightlist[i].plane.Zat0())
 			{
 				rover = spr->sector->e->XFloor.lightlist[i].caster;
-				if (rover) 
+				if (rover)
 				{
 					if (rover->flags & FF_DOUBLESHADOW && sclipTop <= rover->bottom.plane->Zat0())
 					{
@@ -1907,7 +1908,7 @@ void R_DrawSprite (vissprite_t *spr)
 			}
 		}
 		// found new values, recalculate
-		if (sec) 
+		if (sec)
 		{
 			INTBOOL invertcolormap = (spr->Style.RenderStyle.Flags & STYLEF_InvertOverlay);
 
