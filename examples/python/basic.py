@@ -94,6 +94,8 @@ game.set_mode(Mode.ASYNC_SPECTATOR)
 #game.set_console_enabled(True)
 game.init()
 
+sleep(20)
+
 # Define some actions. Each list entry corresponds to declared buttons:
 # MOVE_LEFT, MOVE_RIGHT, ATTACK
 # 5 more combinations are naturally possible but only 3 are included for transparency when watching.

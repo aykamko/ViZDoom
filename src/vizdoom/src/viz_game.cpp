@@ -35,6 +35,7 @@
 #include "g_game.h"
 #include "c_dispatch.h"
 #include "p_acs.h"
+#include "r_utility.h"
 
 EXTERN_CVAR (Bool, viz_debug)
 EXTERN_CVAR (Int, viz_screen_format)
@@ -262,6 +263,7 @@ void VIZ_GameStateTic(){
 
 void VIZ_GameStateUpdateLabels(){
 
+
     unsigned int labelCount = 0;
     if(vizLabels!=NULL){
 
@@ -271,6 +273,8 @@ void VIZ_GameStateUpdateLabels(){
 
         AActor *player = VIZ_PLAYER.mo;
         TThinkerIterator<AActor> iterator;
+
+        // printf("player angle: %f\n", bam2rad(player->angle)); fflush(stdout);
 
         AActor *actor;
         while ( (actor = iterator.Next ()) ) {
@@ -282,7 +286,7 @@ void VIZ_GameStateUpdateLabels(){
                 vizGameStateSM->LABEL[labelCount].value = actor->tid;
                 if (actor != VIZ_PLAYER.mo) {
                     vizGameStateSM->LABEL[labelCount].angle =
-                        bam2rad(R_PointToAngle2(player->X(), player->Y(), actor->X(), actor->Y())) * (180.0/PI);
+                        bam2rad(R_PointToAngle2(player->X(), player->Y(), actor->X(), actor->Y()) - player->angle) * (180.0/PI);
                     vizGameStateSM->LABEL[labelCount].distance =
                         P_AproxDistance(player->X() - actor->X(), player->Y() - actor->Y()) / 65536.0;
                 }
