@@ -13,24 +13,6 @@
 
 from __future__ import print_function
 
-import termios, fcntl, sys, os
-stdin_fd = sys.stdin.fileno()
-
-oldterm = termios.tcgetattr(stdin_fd)
-newattr = termios.tcgetattr(stdin_fd)
-newattr[3] = newattr[3] & ~termios.ICANON & ~termios.ECHO
-termios.tcsetattr(stdin_fd, termios.TCSANOW, newattr)
-
-oldflags = fcntl.fcntl(stdin_fd, fcntl.F_GETFL)
-fcntl.fcntl(stdin_fd, fcntl.F_SETFL, oldflags | os.O_NONBLOCK)
-
-def maybe_get_keypress():
-    try:
-        return sys.stdin.read(1)
-        # print "Got character", repr(c)
-    except IOError:
-        return
-
 from vizdoom import *
 
 from random import choice
@@ -83,11 +65,8 @@ game.set_render_particles(False)
 game.set_render_effects_sprites(False)
 
 # Adds buttons that will be allowed.
-game.add_available_button(Button.MOVE_LEFT)
-game.add_available_button(Button.MOVE_RIGHT)
-game.add_available_button(Button.MOVE_FORWARD)
-game.add_available_button(Button.MOVE_BACKWARD)
-# game.add_available_button(Button.ATTACK)
+for name in Button.names.keys():
+    game.add_available_button(getattr(Button, name))
 
 # Adds game variables that will be included in state.
 game.add_available_game_variable(GameVariable.AMMO2)
@@ -109,7 +88,7 @@ game.set_sound_enabled(False)
 game.set_living_reward(-1)
 
 # Sets ViZDoom mode (PLAYER, ASYNC_PLAYER, SPECTATOR, ASYNC_SPECTATOR, PLAYER mode is default)
-game.set_mode(Mode.PLAYER)
+game.set_mode(Mode.ASYNC_SPECTATOR)
 
 # Initialize the game. Further configuration won't take any effect from now on.
 #game.set_console_enabled(True)
@@ -155,18 +134,18 @@ for i in range(episodes):
         # import pdb; pdb.set_trace()
 
         # Makes a random action and get remember reward.
-        key = maybe_get_keypress()
-        if key == 'w':
-            key_action = actions[2]
-        elif key == 'a':
-            key_action = actions[0]
-        elif key == 's':
-            key_action = actions[3]
-        elif key == 'd':
-            key_action = actions[1]
-        else:
-            key_action = [False, False, False, False]
-        r = game.make_action(key_action)
+        # key = maybe_get_keypress()
+        # if key == 'w':
+        #     key_action = actions[2]
+        # elif key == 'a':
+        #     key_action = actions[0]
+        # elif key == 's':
+        #     key_action = actions[3]
+        # elif key == 'd':
+        #     key_action = actions[1]
+        # else:
+        #     key_action = [False, False, False, False]
+        # r = game.make_action(key_action)
 
         # Makes a "prolonged" action and skip frames:
         # skiprate = 4
@@ -174,9 +153,8 @@ for i in range(episodes):
 
         # The same could be achieved with:
         # game.set_action(choice(actions))
-        # game.advance_action(skiprate)
-        # r = game.get_last_reward()
-
+        game.advance_action()
+        r = game.get_last_reward()
 
         # Prints state's game variables and reward.
         # demon_label = labels[0]
@@ -200,5 +178,5 @@ for i in range(episodes):
 # It will be done automatically anyway but sometimes you need to do it in the middle of the program...
 game.close()
 
-termios.tcsetattr(stdin_fd, termios.TCSAFLUSH, oldterm)
-fcntl.fcntl(stdin_fd, fcntl.F_SETFL, oldflags)
+# termios.tcsetattr(stdin_fd, termios.TCSAFLUSH, oldterm)
+# fcntl.fcntl(stdin_fd, fcntl.F_SETFL, oldflags)
