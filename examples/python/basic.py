@@ -70,6 +70,7 @@ for name in Button.names.keys():
 
 # Adds game variables that will be included in state.
 game.add_available_game_variable(GameVariable.AMMO2)
+game.add_available_game_variable(GameVariable.HEALTH)
 game.set_automap_mode(AutomapMode.OBJECTS)
 
 # Causes episodes to finish after 200 tics (actions)
@@ -82,7 +83,7 @@ game.set_episode_start_time(10)
 game.set_window_visible(True)
 
 # Turns on the sound. (turned off by default)
-game.set_sound_enabled(False)
+game.set_sound_enabled(True)
 
 # Sets the livin reward (for each move) to -1
 game.set_living_reward(-1)
@@ -94,7 +95,7 @@ game.set_mode(Mode.ASYNC_SPECTATOR)
 #game.set_console_enabled(True)
 game.init()
 
-sleep(20)
+# sleep(20)
 
 # Define some actions. Each list entry corresponds to declared buttons:
 # MOVE_LEFT, MOVE_RIGHT, ATTACK
@@ -158,23 +159,25 @@ for i in range(episodes):
         game.advance_action()
         r = game.get_last_reward()
 
+        vars_dict = {'Ammo:': vars[0], 'Health:': vars[1]}
+
         # Prints state's game variables and reward.
         # demon_label = labels[0]
         # print(map(lambda lb: lb.object_name, labels))
         # import pdb; pdb.set_trace()
         print("State #" + str(n))
-        print("Game variables:", vars)
+        print("Game variables:", vars_dict)
         for label in labels:
             print("Demon angle: %f, distance: %f" % (label.angle, label.distance))
-        print("Reward:", r)
+        # print("Reward:", r)
         print("=====================")
 
         if sleep_time > 0:
             sleep(sleep_time)
 
     # Check how the episode went.
-    print("Episode finished.")
-    print("Total reward:", game.get_total_reward())
+    # print("Episode finished.")
+    # print("Total reward:", game.get_total_reward())
     print("************************")
 
 # It will be done automatically anyway but sometimes you need to do it in the middle of the program...
