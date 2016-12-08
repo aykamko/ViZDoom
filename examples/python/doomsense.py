@@ -104,16 +104,17 @@ game.set_doom_game_path(VIZDOOM_HOME+"/scenarios/freedoom2.wad")
 # Sets path to additional resources wad file which is basically your scenario wad.
 # If not specified default maps will be used and it's pretty much useless... unless you want to play good old Doom.
 
-game.set_doom_scenario_path(VIZDOOM_HOME+"/scenarios/basic.wad")
-# game.set_doom_scenario_path(VIZDOOM_HOME+"/scenarios/defend_the_center.wad")
+# game.set_doom_scenario_path(VIZDOOM_HOME+"/scenarios/basic.wad")
+game.set_doom_scenario_path(VIZDOOM_HOME+"/scenarios/defend_the_center.wad")
+# game.set_doom_scenario_path(VIZDOOM_HOME+"/scenarios/rocket_basic.wad")
 
 # Sets map to start (scenario .wad files can contain many maps).
 game.set_doom_map("map01")
 # game.set_doom_map("map03")
 
 # Sets resolution. Default is 320X240
-game.set_screen_resolution(ScreenResolution.RES_640X480)
-# game.set_screen_resolution(ScreenResolution.RES_1600X1200)
+# game.set_screen_resolution(ScreenResolution.RES_640X480)
+game.set_screen_resolution(ScreenResolution.RES_1600X1200)
 
 # Enables labeling of in game objects labeling.
 game.set_labels_buffer_enabled(True)
@@ -180,6 +181,9 @@ def heart(x, health):
 
   return 1.0 - motor_value * health_scale
 
+def calc_angle_scale(a, mina, maxa):
+  return min(math.sin(((a - mina) / (maxa - mina)) * math.pi) + 0.3, 1.0)
+
 heart_time = 0
 i = 0
 while True:
@@ -216,26 +220,27 @@ while True:
             2: {'dist': 10000, 'pwr': 0.0},
             3: {'dist': 10000, 'pwr': 0.0},
           }
+          SENSE_RANGES = [
+            (50, 165),
+            (105, 225),
+            (135, 255),
+            (195, 310)
+          ]
           for d in demon_labels:
             activations = []
-            # if 195 < d.angle < 255:
-            if 195 < d.angle < 300:
-              activations.append(neck_activations[3])
-            # if 165 < d.angle < 225:
-            if 165 < d.angle < 225:
-              activations.append(neck_activations[2])
-            # if 135 < d.angle < 195:
-            if 135 < d.angle < 195:
-              activations.append(neck_activations[1])
-            # if 105 < d.angle < 165:
-            if 60 < d.angle < 165:
-              activations.append(neck_activations[0])
+            for i, srange in enumerate(SENSE_RANGES):
+              if srange[0] < d.angle < srange[-1]:
+                activations.append((
+                  calc_angle_scale(d.angle, srange[0], srange[-1]),
+                  neck_activations[i]
+                ))
 
-            for activation in activations:
+            for angle_scale, activation in activations:
               if d.distance > activation['dist']:
                 continue
+
               norm_dist = (max(MIN_DIST, d.distance) - MAX_DIST) / (MIN_DIST - MAX_DIST)
-              activation['pwr'] = (norm_dist * 1.0) ** 4
+              activation['pwr'] = (angle_scale * norm_dist * 1.0) ** 3
           neck_activations = [neck_activations[i]['pwr'] for i in range(4)]
 
           doomstate_struct = DoomState(
